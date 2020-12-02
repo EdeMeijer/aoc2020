@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace aoc2020.lib
+namespace Aoc2020.Lib
 {
     internal static class Input
     {

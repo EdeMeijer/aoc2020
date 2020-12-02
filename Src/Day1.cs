@@ -1,8 +1,8 @@
 using System;
 using System.Linq;
-using aoc2020.lib;
+using Aoc2020.Lib;
 
-namespace aoc2020
+namespace Aoc2020
 {
     internal static class Day1
     {
