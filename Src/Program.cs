@@ -14,7 +14,8 @@
             // Day4.Part2();
             // Day5.Part1();
             // Day5.Part2();
-            Day6.Part1();
+            // Day6.Part1();
+            Day6.Part2();
         }
     }
 }
