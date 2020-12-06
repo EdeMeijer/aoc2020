@@ -8,14 +8,14 @@ namespace Aoc2020
     {
         internal static void Part1()
         {
-            var input = Input.Read(5);
+            var input = Input.Lines(5);
             var maxId = input.Select(Day5Calculator.CalcSeatId).Max();
             Console.WriteLine(maxId);
         }
 
         internal static void Part2()
         {
-            var input = Input.Read(5);
+            var input = Input.Lines(5);
 
             // Build set of all possible seat numbers
             var allSeats = Enumerable.Range(1, 126)

@@ -8,7 +8,7 @@ namespace Aoc2020
     {
         internal static void Part1()
         {
-            var input = Input.Read(1);
+            var input = Input.Lines(1);
             var numbers = input.Select(int.Parse).ToList();
 
             foreach (var number in numbers)
@@ -23,7 +23,7 @@ namespace Aoc2020
         
         internal static void Part2()
         {
-            var input = Input.Read(1);
+            var input = Input.Lines(1);
             var numbers = input.Select(int.Parse).ToList();
 
             foreach (var number in numbers)

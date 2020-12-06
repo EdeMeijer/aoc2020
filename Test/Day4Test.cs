@@ -23,8 +23,7 @@ hgt:179cm
 hcl:#cfa07d eyr:2025 pid:166559648
 iyr:2011 ecl:brn hgt:59in";
 
-            var lines = input.Split('\n');
-            var passports = PassportParser.Parse(lines).ToList();
+            var passports = PassportParser.Parse(input).ToList();
             var numValid = passports.Count(PassportValidator.HasRequiredFields);
             Assert.Equal(2, numValid);
         }
@@ -45,8 +44,7 @@ eyr:2022
 
 iyr:2010 hgt:158cm hcl:#b6652a ecl:blu byr:1944 eyr:2021 pid:093154719";
 
-            var lines = input.Split('\n');
-            var passports = PassportParser.Parse(lines).ToList();
+            var passports = PassportParser.Parse(input).ToList();
             Assert.True(passports.All(PassportValidator.IsValid));
         }
         
@@ -67,8 +65,7 @@ hgt:59cm ecl:zzz
 eyr:2038 hcl:74454a iyr:2023
 pid:3556412378 byr:2007";
 
-            var lines = input.Split('\n');
-            var passports = PassportParser.Parse(lines).ToList();
+            var passports = PassportParser.Parse(input).ToList();
             Assert.DoesNotContain(passports, PassportValidator.IsValid);
         }
     }

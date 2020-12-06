@@ -8,13 +8,13 @@ namespace Aoc2020
     {
         internal static void Part1()
         {
-            var input = Input.Read(3);
+            var input = Input.Lines(3);
             Console.WriteLine(new Day3Resolver(input).Resolve(3, 1));
         }
         
         internal static void Part2()
         {
-            var input = Input.Read(3);
+            var input = Input.Lines(3);
             var slopes = new (int right, int down)[]
             {
                 (1, 1),

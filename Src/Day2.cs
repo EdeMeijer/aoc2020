@@ -11,13 +11,13 @@ namespace Aoc2020
 
         internal static void Part1()
         {
-            var input = Input.Read(2);
+            var input = Input.Lines(2);
             Console.WriteLine(input.Count(isValidPart1));
         }
 
         internal static void Part2()
         {
-            var input = Input.Read(2);
+            var input = Input.Lines(2);
             Console.WriteLine(input.Count(isValidPart2));
         }
 

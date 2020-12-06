@@ -9,7 +9,7 @@ namespace Aoc2020
     {
         internal static void Part1()
         {
-            var input = Input.Read(4);
+            var input = Input.Text(4);
             var passports = PassportParser.Parse(input).ToList();
             var numValid = passports.Count(PassportValidator.HasRequiredFields);
             Console.WriteLine(numValid);
@@ -17,7 +17,7 @@ namespace Aoc2020
         
         internal static void Part2()
         {
-            var input = Input.Read(4);
+            var input = Input.Text(4);
             var passports = PassportParser.Parse(input).ToList();
             var numValid = passports.Count(PassportValidator.IsValid);
             Console.WriteLine(numValid);
