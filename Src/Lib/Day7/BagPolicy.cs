@@ -1,15 +1,18 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Aoc2020.Lib.Day7
 {
     public class BagPolicy
     {
+        private readonly Dictionary<string, BagRule> _index = new Dictionary<string, BagRule>();
         private readonly Dictionary<string, List<BagRule>> _reverseIndex = new Dictionary<string, List<BagRule>>();
 
         public BagPolicy(IEnumerable<BagRule> rules)
         {
             foreach (var rule in rules)
             {
+                _index[rule.Attributes] = rule;
                 foreach (var attributes in rule.Contents.Keys)
                 {
                     if (!_reverseIndex.ContainsKey(attributes))
@@ -32,6 +35,17 @@ namespace Aoc2020.Lib.Day7
                 {
                     result.UnionWith(GetRulesContaining(rule.Attributes));
                 }
+            }
+
+            return result;
+        }
+
+        public long GetTotalBagsContainedBy(string attributes)
+        {
+            var result = 0L;
+            if (_index.TryGetValue(attributes, out var rule))
+            {
+                result += rule.Contents.Sum(entry => entry.Value * (1 + GetTotalBagsContainedBy(entry.Key)));
             }
 
             return result;
