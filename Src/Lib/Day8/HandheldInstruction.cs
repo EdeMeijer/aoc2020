@@ -22,6 +22,11 @@ namespace Aoc2020.Lib.Day8
             }
             return new HandheldInstruction(opcode, int.Parse(parts[1]));
         }
+
+        public HandheldInstruction WithOpcode(Opcode opcode)
+        {
+            return new HandheldInstruction(opcode, Value);
+        }
     }
 
     public enum Opcode

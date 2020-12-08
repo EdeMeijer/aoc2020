@@ -11,6 +11,7 @@ namespace Aoc2020.Lib.Day8
         private readonly Dictionary<Opcode, Action<int>> ops;
 
         public int Accumulator { get ; private set; }
+        public bool Terminated => _pointer >= _program.Count;
 
         public HandheldVm(IEnumerable<HandheldInstruction> program)
         {
@@ -26,9 +27,13 @@ namespace Aoc2020.Lib.Day8
 
         public int Step()
         {
-            var pointer = _pointer;
+            if (Terminated)
+            {
+                throw new ApplicationException("Program terminated");
+            }
             
-            var instruction = _program[_pointer];
+            var pointer = _pointer;
+            var instruction = _program[pointer];
             var op = ops[instruction.Opcode];
             op(instruction.Value);
 
