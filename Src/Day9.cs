@@ -11,6 +11,11 @@ namespace Aoc2020
             var input = Input.Lines(9);
             Console.WriteLine(Day9Solver.Part1(input));
         }
-
+        
+        internal static void Part2()
+        {
+            var input = Input.Lines(9);
+            Console.WriteLine(Day9Solver.Part2(input));
+        }
     }
 }
