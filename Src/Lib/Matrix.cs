@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,9 +7,8 @@ namespace Aoc2020.Lib
 {
     public sealed class Matrix<T> where T : IComparable<T>
     {
-        private readonly int _height;
-        private readonly int _width;
-
+        public int Height { get; }
+        public int Width { get; }
         public List<T> Values { get; }
 
         public Matrix(int height, int width, T defaultValue) :
@@ -20,8 +18,8 @@ namespace Aoc2020.Lib
 
         public Matrix(int height, int width, IEnumerable<T> values)
         {
-            _height = height;
-            _width = width;
+            Height = height;
+            Width = width;
             Values = values.ToList();
             if (Values.Count != height * width)
             {
@@ -29,7 +27,7 @@ namespace Aoc2020.Lib
             }
         }
 
-        public Matrix<T> Clone() => new Matrix<T>(_height, _width, Values.ToList());
+        public Matrix<T> Clone() => new Matrix<T>(Height, Width, Values.ToList());
 
         public T this[int y, int x]
         {
@@ -39,20 +37,20 @@ namespace Aoc2020.Lib
 
         private int IndexOf(int y, int x)
         {
-            if (x < 0 || y < 0 || x >= _width || y >= _width)
+            if (x < 0 || y < 0 || x >= Width || y >= Width)
             {
                 throw new ArgumentException("Invalid coordinate");
             }
 
-            return y * _width + x;
+            return y * Width + x;
         }
 
         public override string ToString()
         {
             var result = new StringBuilder();
-            for (var y = 0; y < _height; y ++)
+            for (var y = 0; y < Height; y ++)
             {
-                for (var x = 0; x < _width; x ++)
+                for (var x = 0; x < Width; x ++)
                 {
                     result.Append(this[y, x]);
                 }
@@ -65,8 +63,8 @@ namespace Aoc2020.Lib
 
         private bool Equals(Matrix<T> other)
         {
-            return _height == other._height &&
-                   _width == other._width &&
+            return Height == other.Height &&
+                   Width == other.Width &&
                    Values.Zip(other.Values).All(tup => Equals(tup.First, tup.Second));
         }
 
@@ -77,7 +75,7 @@ namespace Aoc2020.Lib
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(_height, _width, Values);
+            return HashCode.Combine(Height, Width, Values);
         }
     }
 }
