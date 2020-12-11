@@ -1,6 +1,6 @@
 using System;
 
-namespace Aoc2020.Lib.Day8
+namespace Aoc2020.Lib.Day08
 {
     public class HandheldInstruction
     {

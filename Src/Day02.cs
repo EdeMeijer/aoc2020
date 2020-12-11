@@ -5,7 +5,7 @@ using Aoc2020.Lib;
 
 namespace Aoc2020
 {
-    public static class Day2
+    public static class Day02
     {
         private static readonly Regex entryPattern = new Regex(@"^(\d+)-(\d+) ([a-z]): (.*)$");
 

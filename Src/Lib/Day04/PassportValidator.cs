@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Aoc2020.Lib.Day4
+namespace Aoc2020.Lib.Day04
 {
     public static class PassportValidator
     {

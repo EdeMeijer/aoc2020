@@ -1,9 +1,9 @@
-using Aoc2020.Lib.Day8;
+using Aoc2020.Lib.Day08;
 using Xunit;
 
 namespace Aoc2020
 {
-    public class Day8Test
+    public class Day08Test
     {
         [Fact]
         public void TestPart1()
@@ -19,7 +19,7 @@ jmp -4
 acc +6";
 
             var lines = input.Split('\n');
-            var result = Day8Solver.Part1(lines);
+            var result = Day08Solver.Part1(lines);
             
             Assert.Equal(5, result);
         }
@@ -38,7 +38,7 @@ jmp -4
 acc +6";
 
             var lines = input.Split('\n');
-            var result = Day8Solver.Part2(lines);
+            var result = Day08Solver.Part2(lines);
             
             Assert.Equal(8, result);
         }

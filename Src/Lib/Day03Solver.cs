@@ -1,19 +1,19 @@
 namespace Aoc2020.Lib
 {
-    public class Day3Resolver
+    public class Day03Solver
     {
         private readonly string[] _map;
         private readonly int _height;
         private readonly int _width;
         
-        public Day3Resolver(string[] map)
+        public Day03Solver(string[] map)
         {
             _map = map;
             _height = map.Length;
             _width = map[0].Length;
         }
 
-        public int Resolve(int right, int down)
+        public int GetNumTrees(int right, int down)
         {
             var y = 0;
             var x = 0;

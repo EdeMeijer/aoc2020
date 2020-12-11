@@ -2,9 +2,9 @@ using System;
 using System.Collections.Immutable;
 using System.Linq;
 
-namespace Aoc2020.Lib.Day9
+namespace Aoc2020.Lib.Day09
 {
-    public class Day9Solver
+    public class Day09Solver
     {
         public static long Part1(string[] input, int windowLength = 25)
         {

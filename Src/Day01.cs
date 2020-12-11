@@ -4,7 +4,7 @@ using Aoc2020.Lib;
 
 namespace Aoc2020
 {
-    internal static class Day1
+    internal static class Day01
     {
         internal static void Part1()
         {

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 
-namespace Aoc2020.Lib.Day8
+namespace Aoc2020.Lib.Day08
 {
     public class HandheldVm
     {

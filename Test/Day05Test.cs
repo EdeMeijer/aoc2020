@@ -3,7 +3,7 @@ using Xunit;
 
 namespace Aoc2020
 {
-    public class Day5Test
+    public class Day05Test
     {
         [Fact]
         public void TestCalcSeat()

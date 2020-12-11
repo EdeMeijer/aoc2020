@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
-using Aoc2020.Lib.Day7;
+using Aoc2020.Lib.Day07;
 using Xunit;
 
 namespace Aoc2020
 {
-    public class Day7Test
+    public class Day07Test
     {
         [Fact]
         public void TestParser()

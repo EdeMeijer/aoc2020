@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
-namespace Aoc2020.Lib.Day8
+namespace Aoc2020.Lib.Day08
 {
-    public static class Day8Solver
+    public static class Day08Solver
     {
         public static int Part1(string[] input)
         {

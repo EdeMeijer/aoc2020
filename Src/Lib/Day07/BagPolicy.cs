@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Aoc2020.Lib.Day7
+namespace Aoc2020.Lib.Day07
 {
     public class BagPolicy
     {

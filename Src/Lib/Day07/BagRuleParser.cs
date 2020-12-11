@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Aoc2020.Lib.Day7
+namespace Aoc2020.Lib.Day07
 {
     public static class BagRuleParser
     {

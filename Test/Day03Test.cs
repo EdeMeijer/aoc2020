@@ -3,7 +3,7 @@ using Xunit;
 
 namespace Aoc2020
 {
-    public class Day3Test
+    public class Day03Test
     {
         [Fact]
         public void TestResolver()
@@ -21,7 +21,7 @@ namespace Aoc2020
 .#..#...#.#";
             var lines = input.Split('\n');
             
-            var result = new Day3Resolver(lines).Resolve(3, 1);
+            var result = new Day03Solver(lines).GetNumTrees(3, 1);
             
             Assert.Equal(7, result);
         }

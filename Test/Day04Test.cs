@@ -1,10 +1,10 @@
 using System.Linq;
-using Aoc2020.Lib.Day4;
+using Aoc2020.Lib.Day04;
 using Xunit;
 
 namespace Aoc2020
 {
-    public class Day4Test
+    public class Day04Test
     {
         [Fact]
         public void TestPart1()

@@ -12,7 +12,8 @@ namespace Aoc2020.Lib
         private static string FileFor(int day)
         {
             var dir = AppDomain.CurrentDomain.BaseDirectory;
-            return $"{dir}/../../../input/day{day}";
+            
+            return $"{dir}/../../../input/day{(day < 10 ? "0" : "")}{day}";
         }
     }
 }

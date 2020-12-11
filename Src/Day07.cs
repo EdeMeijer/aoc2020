@@ -1,11 +1,11 @@
 using System;
 using System.Linq;
 using Aoc2020.Lib;
-using Aoc2020.Lib.Day7;
+using Aoc2020.Lib.Day07;
 
 namespace Aoc2020
 {
-    internal static class Day7
+    internal static class Day07
     {
         internal static void Part1()
         {
