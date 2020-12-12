@@ -63,6 +63,66 @@ namespace Aoc2020
 
         internal static void Part2()
         {
+            var input = Input.Lines(12);
+            
+            var y = 0L;
+            var x = 0L;
+            var wx = 10;
+            var wy = -1;
+
+            void Turn(int deg)
+            {
+                var newWx = deg switch
+                {
+                    0 => wx,
+                    90 => wy,
+                    180 => -wx,
+                    270 => -wy
+                };
+                wy = deg switch
+                {
+                    0 => wy,
+                    90 => -wx,
+                    180 => -wy,
+                    270 => wx
+                };
+                wx = newWx;
+            }
+
+            foreach (var line in input)
+            {
+                var op = line[0];
+                var value = int.Parse(line[1..]);
+                switch (op)
+                {
+                    case 'N':
+                        wy -= value;
+                        break;
+                    case 'S':
+                        wy += value;
+                        break;
+                    case 'E':
+                        wx += value;
+                        break;
+                    case 'W':
+                        wx -= value;
+                        break;
+                    case 'L':
+                        Turn(value);
+                        break;
+                    case 'R':
+                        Turn(360 - value);
+                        break;
+                    case 'F':
+                        x += value * wx;
+                        y += value * wy;
+                        break;
+                    default:
+                        throw new Exception("Unsupported");
+                }
+            }
+            
+            Console.WriteLine(Math.Abs(x) + Math.Abs(y));
         }
     }
 }
