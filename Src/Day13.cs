@@ -44,19 +44,19 @@ namespace Aoc2020
 
             var start = 0L;
             var factor = entries[0].id;
-            foreach (var entry in entries.Skip(1))
+            foreach (var (id, offset) in entries.Skip(1))
             {
                 for (var multiplier = 0;; multiplier ++)
                 {
                     var newStart = start + factor * multiplier;
-                    if ((newStart + entry.offset) % entry.id == 0)
+                    if ((newStart + offset) % id == 0)
                     {
                         start = newStart;
                         break;
                     }
                 }
 
-                factor *= entry.id;
+                factor *= id;
             }
 
             Console.WriteLine(start);
