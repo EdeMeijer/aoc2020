@@ -32,15 +32,12 @@ namespace Aoc2020
         {
             var input =
                 "13,x,x,x,x,x,x,37,x,x,x,x,x,401,x,x,x,x,x,x,x,x,x,x,x,x,x,17,x,x,x,x,19,x,x,x,23,x,x,x,x,x,29,x,613,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,41";
-
-            var entries = new List<(long id, int offset)>();
-            foreach (var (id, offset) in input.Split(',').Select((id, i) => (id, i)))
-            {
-                if (id != "x")
-                {
-                    entries.Add((long.Parse(id), offset));
-                }
-            }
+            
+            var entries = input.Split(',')
+                .Select((id, i) => (id, i))
+                .Where(tup => tup.id != "x")
+                .Select(tup => (id: long.Parse(tup.id!), offset: tup.i))
+                .ToList();
 
             var start = 0L;
             var factor = entries[0].id;
