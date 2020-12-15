@@ -11,7 +11,6 @@ namespace Aoc2020
             var input = "0,20,7,16,1,18,15";
             var startingNumbers = input.Split(',').Select(long.Parse).ToList();
             var speakIndices = new Dictionary<long, List<int>>();
-            var counts = new Dictionary<long, int>();
 
             var prev = 0L;
             for (var i = 0; i < 2020; i ++)
@@ -24,7 +23,7 @@ namespace Aoc2020
                 else
                 {
                     var indices = speakIndices[prev];
-                    if (counts.GetValueOrDefault(prev, 0) == 1 && indices[^1] == i - 1)
+                    if (indices.Count == 1 && indices[0] == i - 1)
                     {
                         speak = 0;
                     }
@@ -34,7 +33,6 @@ namespace Aoc2020
                     }
                 }
 
-                counts[speak] = counts.GetValueOrDefault(speak, 0) + 1;
                 if (!speakIndices.ContainsKey(speak))
                 {
                     speakIndices[speak] = new List<int>();
