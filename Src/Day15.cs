@@ -6,14 +6,18 @@ namespace Aoc2020
 {
     public static class Day15
     {
-        public static void Part1()
+        public static void Part1() => Run(2020);
+        
+        public static void Part2() => Run(30000000);
+
+        private static void Run(int steps)
         {
             var input = "0,20,7,16,1,18,15";
             var startingNumbers = input.Split(',').Select(long.Parse).ToList();
             var speakIndices = new Dictionary<long, List<int>>();
 
             var prev = 0L;
-            for (var i = 0; i < 2020; i ++)
+            for (var i = 0; i < steps; i ++)
             {
                 long speak;
                 if (i < startingNumbers.Count)
