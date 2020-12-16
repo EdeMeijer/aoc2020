@@ -18,19 +18,56 @@ namespace Aoc2020
             var rules = ParseRules( parts[0].Split('\n'));
             var nearby = parts[2].Split('\n').Skip(1).Select(ParseTicket).ToList();
 
-            var errorRate = 0;
-            foreach (var ticket in nearby)
+            var errorRate = nearby
+                .Sum(ticket => ticket.Sum(entry => rules.Values.Any(rule => rule(entry)) ? 0 : entry));
+
+            Console.WriteLine(errorRate);
+        }
+
+        public static void Part2()
+        {
+            var input = Input.Text(16);
+            var parts = input.Split("\n\n");
+
+            var rules = ParseRules( parts[0].Split('\n'));
+            var mine = ParseTicket(parts[1].Split('\n')[1]);
+            var nearby = parts[2].Split('\n').Skip(1).Select(ParseTicket).ToList();
+
+            var validNearby = nearby
+                .Where(ticket => ticket.All(entry => rules.Values.Any(rule => rule(entry))))
+                .ToList();
+
+            var possible = new Dictionary<int, List<string>>();
+            foreach (var i in Enumerable.Range(0, rules.Count))
             {
-                foreach (var entry in ticket)
+                possible[i] = new List<string>();
+                foreach (var (name, predicate) in rules)
                 {
-                    if (!rules.Any(rule => rule.Value.Invoke(entry)))
+                    if (validNearby.All(ticket => predicate(ticket[i])))
                     {
-                        errorRate += entry;
+                        possible[i].Add(name);
                     }
                 }
             }
 
-            Console.WriteLine(errorRate);
+            var order = new string[rules.Count];
+            for (var i = 0; i < rules.Count; i ++)
+            {
+                var next = possible.First(r => r.Value.Count == 1);
+                var rule = next.Value.First();
+                order[next.Key] = rule;
+                foreach (var list in possible.Values)
+                {
+                    list.Remove(rule);
+                }
+            }
+
+            var result = order
+                .Select((rule, i) => (rule, mine[i]))
+                .Where(tup => tup.rule.StartsWith("departure"))
+                .Aggregate(1L, (a, b) => a * b.Item2);
+
+            Console.WriteLine(result);
         }
 
         private static Dictionary<string, Func<int, bool>> ParseRules(IEnumerable<string> lines)

@@ -34,7 +34,7 @@
             // Day14.Part2();
             // Day15.Part1();
             // Day15.Part2();
-            Day16.Part1();
+            Day16.Part2();
         }
     }
 }
