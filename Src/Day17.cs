@@ -1,123 +1,95 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Aoc2020.Lib;
 
 namespace Aoc2020
 {
-    using PointBag = HashSet<(int x, int y, int z)>;
-
     public static class Day17
     {
-        private static readonly PointBag _offsets = new PointBag();
-
-        static Day17()
+        private class CoordComparer : IEqualityComparer<int[]>
         {
-            for (var dx = -1; dx <= 1; dx ++)
-            {
-                for (var dy = -1; dy <= 1; dy ++)
-                {
-                    for (var dz = -1; dz <= 1; dz ++)
-                    {
-                        if (dx != 0 || dy != 0 || dz != 0)
-                        {
-                            _offsets.Add((dx, dy, dz));
-                        }
-                    }
-                }
-            }
+            public bool Equals(int[] x, int[] y) => x.SequenceEqual(y);
+
+            public int GetHashCode(int[] obj) => obj.Length == 3
+                ? HashCode.Combine(obj[0], obj[1], obj[2])
+                : HashCode.Combine(obj[0], obj[1], obj[2], obj[3]);
         }
 
-        public static void Part1()
+        private static readonly CoordComparer _coordComparer = new CoordComparer();
+
+        public static void Part1() => Simulate(3);
+
+        public static void Part2() => Simulate(4);
+
+        private static void Simulate(int nDims) => Console.WriteLine(
+            Enumerable.Range(0, 6)
+                .Aggregate(LoadInitialState(nDims), (state, _) => Step(state))
+                .Count
+        );
+
+        private static HashSet<int[]> LoadInitialState(int nDims) => Input.Lines(17)
+            .SelectMany((line, y) =>
+                line.ToCharArray()
+                    .Select((s, x) => (s, x))
+                    .Where(t => t.s == '#')
+                    .Select(t => nDims == 3 ? new [] {t.x, y, 0} : new [] { t.x, y, 0, 0})
+            )
+            .ToHashSet(_coordComparer);
+
+        private static HashSet<int[]> Step(HashSet<int[]> state) => ScanBlock(ExtendBoundingBox(GetBoundingBox(state)))
+            .Where(coord => ShouldActivate(state.Contains(coord), CountActiveNeighbors(state, coord)))
+            .ToHashSet(_coordComparer);
+
+        private static bool ShouldActivate(in bool wasActive, in int activeNeighbors) =>
+            activeNeighbors == 3 || (wasActive && activeNeighbors == 2);
+
+        private static (int[] start, int[] end) GetBoundingBox(HashSet<int[]> state)
         {
-            var input = @".##.####
-.#.....#
-#.###.##
-#####.##
-#...##.#
-#######.
-##.#####
-.##...#.";
+            var min = state.First()[..];
+            var max = min[..];
 
-            var state = input.Split('\n')
-                .SelectMany((line, y) =>
-                    line.ToCharArray()
-                        .Select((s, x) => (s, x))
-                        .Where(t => t.s == '#')
-                        .Select(t => (t.x, y, z: 0))
-                )
-                .ToHashSet();
-
-            for (var cycle = 0; cycle < 6; cycle ++)
+            foreach (var coord in state)
             {
-                state = Simulate(state);
-            }
-
-            Console.WriteLine(state.Count());
-        }
-
-        private static PointBag Simulate(PointBag state)
-        {
-            var result = new PointBag();
-
-            // Determine simulation bounding box
-            var xMin = state.Min(p => p.x) - 1;
-            var xMax = state.Max(p => p.x) + 1;
-            var yMin = state.Min(p => p.y) - 1;
-            var yMax = state.Max(p => p.y) + 1;
-            var zMin = state.Min(p => p.z) - 1;
-            var zMax = state.Max(p => p.z) + 1;
-
-            for (var x = xMin; x <= xMax; x ++)
-            {
-                for (var y = yMin; y <= yMax; y ++)
+                foreach (var (v, dim) in coord.Select((v, d) => (v, d)))
                 {
-                    for (var z = zMin; z <= zMax; z ++)
-                    {
-                        var wasActive = state.Contains((x, y, z));
-                        var activeNeighbors = CountActiveNeighbors(state, x, y, z);
-                        if (ShouldActivate(wasActive, activeNeighbors))
-                        {
-                            result.Add((x, y, z));
-                        }
-                    }
+                    min[dim] = Math.Min(min[dim], v);
+                    max[dim] = Math.Max(max[dim], v);
                 }
             }
 
-            return result;
+            return (min, max);
         }
 
-        private static int CountActiveNeighbors(PointBag state, int x, int y, int z)
-        {
-            var result = 0;
+        private static int CountActiveNeighbors(HashSet<int[]> state, int[] coord) =>
+            ScanBlock(ExtendBoundingBox((coord, coord)))
+                .Count(scanCoord => !scanCoord.SequenceEqual(coord) && state.Contains(scanCoord));
 
-            for (var dx = -1; dx <= 1; dx ++)
+        private static (int[] start, int[] end) ExtendBoundingBox((int[] start, int[] end) boundingBox)
+        {
+            var (start, end) = boundingBox;
+            return (start.Select(v => v - 1).ToArray(), end.Select(v => v + 1).ToArray());
+        }
+
+        private static IEnumerable<int[]> ScanBlock((int[] start, int[] end) boundingBox) =>
+            ScanBlock(boundingBox.start, boundingBox.end);
+
+        private static IEnumerable<int[]> ScanBlock(int[] min, int[] max)
+        {
+            var cur = min[..];
+            for (;;)
             {
-                for (var dy = -1; dy <= 1; dy ++)
+                yield return cur[..];
+
+                for (var dim = 0; dim < min.Length; dim ++)
                 {
-                    for (var dz = -1; dz <= 1; dz ++)
-                    {
-                        if (dx != 0 || dy != 0 || dz != 0)
-                        {
-                            if (state.Contains((x + dx, y + dy, z + dz)))
-                            {
-                                result ++;
-                            }
-                        }
-                    }
+                    cur[dim] ++;
+                    if (cur[dim] > max[dim]) cur[dim] = min[dim];
+                    else break;
                 }
+
+                if (cur.SequenceEqual(min)) break;
             }
-
-            return result;
-        }
-
-        private static bool ShouldActivate(in bool wasActive, in int activeNeighbors)
-        {
-            if (wasActive)
-            {
-                return activeNeighbors == 2 || activeNeighbors == 3;
-            }
-
-            return activeNeighbors == 3;
         }
     }
 }
