@@ -57,30 +57,16 @@ namespace Aoc2020
 
             if (rule.Terminal != null)
             {
-                var valid = input.Length > 0 && input[0] == rule.Terminal.Value;
-                return valid && ApplyRuleList(input[1..], ruleSet, continuation);
+                return input.Length > 0 &&
+                       input[0] == rule.Terminal.Value &&
+                       ApplyRuleList(input[1..], ruleSet, continuation);
             }
 
-            foreach (var subRule in rule.SubRules!)
-            {
-                if (ApplyRuleList(input, ruleSet, subRule.Concat(continuation).ToArray()))
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return rule.SubRules!.Any(subRule => ApplyRuleList(input, ruleSet, subRule.Concat(continuation).ToArray()));
         }
 
-        private static bool ApplyRuleList(string input, Dictionary<int, Rule> ruleSet, int[] ruleIds)
-        {
-            if (ruleIds.Length == 0)
-            {
-                return input == "";
-            }
-
-            return ApplyRule(input, ruleSet, ruleIds[0], ruleIds[1..]);
-        }
+        private static bool ApplyRuleList(string input, Dictionary<int, Rule> ruleSet, int[] ruleIds) =>
+            ruleIds.Length == 0 ? input == "" :  ApplyRule(input, ruleSet, ruleIds[0], ruleIds[1..]);
 
         private static Dictionary<int, Rule> BuildRuleSet(string[] ruleInput)
         {
