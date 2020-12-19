@@ -26,7 +26,7 @@ namespace Aoc2020
         public static void Part1()
         {
             var input = Input.Text(19);
-            
+
             var parts = input.Split("\n\n");
             var rules = BuildRuleSet(parts[0].Split('\n'));
             var received = parts[1].Split('\n');
@@ -34,51 +34,52 @@ namespace Aoc2020
             Console.WriteLine(received.Count(line => IsMatch(line, rules)));
         }
 
-        private static bool IsMatch(string input, Dictionary<int, Rule> ruleSet)
+        public static void Part2()
         {
-            var (match, remaining) = ApplyRule(input, ruleSet, 0);
-            return match && remaining == "";
+            var input = Input.Text(19);
+
+            var parts = input.Split("\n\n");
+            var rules = BuildRuleSet(parts[0].Split('\n'));
+            var received = parts[1].Split('\n');
+
+            rules[8] = new Rule(new [] {new [] {42}, new [] {42, 8}}, null);
+            rules[11] = new Rule(new [] {new [] {42, 31}, new [] {42, 11, 31}}, null);
+
+            Console.WriteLine(received.Count(line => IsMatch(line, rules)));
         }
 
-        private static (bool match, string remaining) ApplyRule(string input, Dictionary<int, Rule> ruleSet, int ruleId)
+        private static bool IsMatch(string input, Dictionary<int, Rule> ruleSet) =>
+            ApplyRule(input, ruleSet, 0, new int[0]);
+
+        private static bool ApplyRule(string input, Dictionary<int, Rule> ruleSet, int ruleId, int[] continuation)
         {
             var rule = ruleSet[ruleId];
 
             if (rule.Terminal != null)
             {
-                return (input.Length > 0 && input[0] == rule.Terminal.Value, input[1..]);
+                var valid = input.Length > 0 && input[0] == rule.Terminal.Value;
+                return valid && ApplyRuleList(input[1..], ruleSet, continuation);
             }
 
             foreach (var subRule in rule.SubRules!)
             {
-                var (subMatch, subRemaining) = ApplySubRule(input, ruleSet, subRule);
-                if (subMatch)
+                if (ApplyRuleList(input, ruleSet, subRule.Concat(continuation).ToArray()))
                 {
-                    return (true, subRemaining);
+                    return true;
                 }
             }
 
-            return (false, "");
+            return false;
         }
 
-        private static (bool match, string remaining) ApplySubRule(
-            string input, 
-            Dictionary<int, Rule> ruleSet,
-            int[] ruleIds
-        )
+        private static bool ApplyRuleList(string input, Dictionary<int, Rule> ruleSet, int[] ruleIds)
         {
-            foreach (var ruleId in ruleIds)
+            if (ruleIds.Length == 0)
             {
-                var (match, remaining) = ApplyRule(input, ruleSet, ruleId);
-                if (!match)
-                {
-                    return (false, "");
-                }
-
-                input = remaining;
+                return input == "";
             }
 
-            return (true, input);
+            return ApplyRule(input, ruleSet, ruleIds[0], ruleIds[1..]);
         }
 
         private static Dictionary<int, Rule> BuildRuleSet(string[] ruleInput)
