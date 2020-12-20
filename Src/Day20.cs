@@ -19,10 +19,6 @@ namespace Aoc2020
                 Data = data;
             }
 
-            public Tile RotateCw() => new Tile(Id, Data.RotateCw());
-
-            public Tile FlipHorizontal() => new Tile(Id, Data.FlipHorizontal());
-
             public bool Equals(Tile? other)
             {
                 return other != null &&
@@ -32,6 +28,91 @@ namespace Aoc2020
         }
 
         public static void Part1()
+        {
+            var arrangedTiles = SolveTileArrangement();
+
+            var checksum = arrangedTiles[0, 0].Id *
+                           arrangedTiles[0, arrangedTiles.Width - 1].Id *
+                           arrangedTiles[arrangedTiles.Height - 1, 0].Id *
+                           arrangedTiles[arrangedTiles.Height - 1, arrangedTiles.Width - 1].Id;
+
+            Console.WriteLine(checksum);
+        }
+
+        public static void Part2()
+        {
+            var arrangedTiles = SolveTileArrangement();
+            var imageSize = arrangedTiles.Height * (arrangedTiles[0, 0].Data.Height - 2);
+
+            var image = new Matrix<char>(imageSize, imageSize, GetTotalImagePixels(arrangedTiles));
+
+            var seaMonster = new Matrix<char>(
+                3,
+                20,
+                "                  # #    ##    ##    ### #  #  #  #  #  #   "
+            );
+
+            var totalPounds = image.Values.Count(v => v == '#');
+            var monsterPounds = seaMonster.Values.Count(v => v == '#');
+
+            foreach (var monsterVariant in GetTransformations(seaMonster))
+            {
+                var monsters = 0;
+                for (var oy = 0; oy <= image.Height - monsterVariant.Height; oy ++)
+                {
+                    for (var ox = 0; ox <= image.Width - monsterVariant.Width; ox ++)
+                    {
+                        var slice = image.Slice(oy, monsterVariant.Height, ox, monsterVariant.Width);
+                        if (IsSeaMonster(slice, monsterVariant))
+                        {
+                            monsters ++;
+                        }
+                    }
+                }
+
+                if (monsters > 0)
+                {
+                    Console.WriteLine(totalPounds - monsterPounds * monsters);
+                    break;
+                }
+            }
+        }
+
+        private static bool IsSeaMonster(IMatrix<char> seaSlice, IMatrix<char> monster)
+        {
+            for (var y = 0; y < seaSlice.Height; y ++)
+            {
+                for (var x = 0; x < seaSlice.Width; x ++)
+                {
+                    if (monster[y, x] == '#' && seaSlice[y, x] != '#')
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        private static IEnumerable<char> GetTotalImagePixels(IMatrix<Tile> arrangedTiles)
+        {
+            for (var ty = 0; ty < arrangedTiles.Height; ty ++)
+            {
+                for (var y = 1; y < 9; y ++)
+                {
+                    for (var tx = 0; tx < arrangedTiles.Width; tx ++)
+                    {
+                        var tile = arrangedTiles[ty, tx].Data;
+                        for (var x = 1; x < 9; x ++)
+                        {
+                            yield return tile[y, x];
+                        }
+                    }
+                }
+            }
+        }
+
+        private static IMatrix<Tile> SolveTileArrangement()
         {
             var input = Input.Text(20);
 
@@ -52,23 +133,19 @@ namespace Aoc2020
                 throw new ApplicationException("Could not solve");
             }
 
-            var checksum = solution[0, 0].Id *
-                           solution[0, totalDim - 1].Id *
-                           solution[totalDim - 1, 0].Id *
-                           solution[totalDim - 1, totalDim - 1].Id;
-
-            Console.WriteLine(checksum);
+            return solution;
         }
 
-        private static  IMatrix<Tile>? Solve(IMatrix<Tile> solution, int y, int x, ImmutableList<Tile> remainingTiles)
+        private static IMatrix<Tile>? Solve(IMatrix<Tile> solution, int y, int x, ImmutableList<Tile> remainingTiles)
         {
             foreach (var (tile, i) in remainingTiles.Select((t, i) => (t, i)))
             {
-                foreach (var variant in CreateTileVariants(tile))
+                foreach (var variant in GetTransformations(tile.Data))
                 {
-                    if (TileFits(solution, y, x, variant))
+                    var variantTile = new Tile(tile.Id, variant);
+                    if (TileFits(solution, y, x, variantTile))
                     {
-                        var nextSolution = solution.With(y, x, variant);
+                        var nextSolution = solution.With(y, x, variantTile);
                         var nextY = y;
                         var nextX = x + 1;
                         if (nextX == solution.Width)
@@ -93,7 +170,7 @@ namespace Aoc2020
             return null;
         }
 
-        private static IEnumerable<Tile> CreateTileVariants(Tile tile)
+        private static IEnumerable<IMatrix<char>> GetTransformations(IMatrix<char> tile)
         {
             var variant = tile;
             for (var o = 0; o < 8; o ++)

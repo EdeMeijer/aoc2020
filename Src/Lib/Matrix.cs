@@ -17,7 +17,7 @@ namespace Aoc2020.Lib
         T this[int y, int x] { get; set; }
 
         IEnumerable<T> Row(int y);
-        
+
         IEnumerable<T> Col(int x);
 
         IMatrix<T> Clone();
@@ -27,12 +27,15 @@ namespace Aoc2020.Lib
         IMatrix<T> RotateCw();
 
         IMatrix<T> FlipHorizontal();
+
+        IMatrix<T> Slice(int y, int height, int x, int width);
     }
 
     public abstract class AbstractMatrix<T>  : IMatrix<T> where T : IEquatable<T>
     {
         public abstract int Height { get; }
         public abstract int Width { get; }
+
         public virtual IEnumerable<T> Values
         {
             get
@@ -65,6 +68,7 @@ namespace Aoc2020.Lib
             }
         }
 
+
         public IMatrix<T> Clone() => new Matrix<T>(Height, Width, Values.ToList());
 
         public IMatrix<T> With(int y, int x, T value)
@@ -74,9 +78,12 @@ namespace Aoc2020.Lib
             return copy;
         }
 
+
         public IMatrix<T> RotateCw() => new RotatedMatrix<T>(this);
 
         public IMatrix<T> FlipHorizontal() => new FlippedMatrix<T>(this);
+
+        public IMatrix<T> Slice(int y, int height, int x, int width) => new MatrixSlice<T>(this, y, height, x, width);
 
         public override string ToString()
         {
@@ -164,6 +171,31 @@ namespace Aoc2020.Lib
         {
             get => _inner[y, _inner.Width - x - 1];
             set => _inner[y, _inner.Width - x - 1] = value;
+        }
+    }
+
+    public sealed class MatrixSlice<T> : AbstractMatrix<T> where T : IEquatable<T>
+    {
+        private readonly IMatrix<T> _inner;
+        private readonly int _y;
+        private readonly int _x;
+
+        public override int Height { get; }
+        public override int Width { get; }
+
+        public MatrixSlice(IMatrix<T> inner, int y, int height, int x, int width)
+        {
+            _inner = inner;
+            _y = y;
+            _x = x;
+            Height = height;
+            Width = width;
+        }
+
+        public override T this[int y, int x]
+        {
+            get => _inner[_y + y, _x + x];
+            set => _inner[_y + y, _x + x] = value;
         }
     }
 
