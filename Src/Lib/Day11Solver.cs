@@ -9,7 +9,7 @@ namespace Aoc2020.Lib
 
         public static int Part2(string[] input) => Solve(input, CountOccupiedVisibleSeats, 5);
 
-        public static Matrix<char> BuildState(string[] input)
+        public static IMatrix<char> BuildState(string[] input)
         {
             var height = input.Length;
             var width = input[0].Length;
@@ -17,7 +17,7 @@ namespace Aoc2020.Lib
             return new Matrix<char>(height, width, seats);
         }
 
-        private static int Solve(string[] input, Func<Matrix<char>, int, int, int> scanFn, int tolerance)
+        private static int Solve(string[] input, Func<IMatrix<char>, int, int, int> scanFn, int tolerance)
         {
             var state = BuildState(input);
 
@@ -49,7 +49,7 @@ namespace Aoc2020.Lib
             return state.Values.Count(c => c == '#');
         }
 
-        private static int CountOccupiedAdjacentSeats(Matrix<char> state, int y, int x)
+        private static int CountOccupiedAdjacentSeats(IMatrix<char> state, int y, int x)
         {
             var result = 0;
             for (var dx = -1; dx <= 1; dx ++)
@@ -74,7 +74,7 @@ namespace Aoc2020.Lib
             return result;
         }
 
-        public static int CountOccupiedVisibleSeats(Matrix<char> state, int y, int x)
+        public static int CountOccupiedVisibleSeats(IMatrix<char> state, int y, int x)
         {
             var result = 0;
             for (var dx = -1; dx <= 1; dx ++)

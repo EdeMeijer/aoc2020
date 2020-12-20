@@ -40,7 +40,8 @@
             // Day18.Part1();
             // Day18.Part2();
             // Day19.Part1();
-            Day19.Part2();
+            // Day19.Part2();
+            Day20.Part1();
         }
     }
 }

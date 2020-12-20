@@ -1,49 +1,82 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace Aoc2020.Lib
 {
-    public sealed class Matrix<T> where T : IComparable<T>
+    public interface IMatrix<T> : IEquatable<IMatrix<T>> where T : IEquatable<T>
     {
-        public int Height { get; }
-        public int Width { get; }
-        public List<T> Values { get; }
+        int Height { get; }
 
-        public Matrix(int height, int width, T defaultValue) :
-            this(height, width, Enumerable.Repeat(defaultValue, height * width))
-        {
-        }
+        int Width { get; }
 
-        public Matrix(int height, int width, IEnumerable<T> values)
+        IEnumerable<T> Values { get; }
+
+        T this[int y, int x] { get; set; }
+
+        IEnumerable<T> Row(int y);
+        
+        IEnumerable<T> Col(int x);
+
+        IMatrix<T> Clone();
+
+        IMatrix<T> With(int y, int x, T value);
+
+        IMatrix<T> RotateCw();
+
+        IMatrix<T> FlipHorizontal();
+    }
+
+    public abstract class AbstractMatrix<T>  : IMatrix<T> where T : IEquatable<T>
+    {
+        public abstract int Height { get; }
+        public abstract int Width { get; }
+        public virtual IEnumerable<T> Values
         {
-            Height = height;
-            Width = width;
-            Values = values.ToList();
-            if (Values.Count != height * width)
+            get
             {
-                throw new ArgumentException("Invalid number of values");
+                for (var y = 0; y < Height; y ++)
+                {
+                    for (var x = 0; x < Width; x ++)
+                    {
+                        yield return this[y, x];
+                    }
+                }
             }
         }
 
-        public Matrix<T> Clone() => new Matrix<T>(Height, Width, Values.ToList());
+        public abstract T this[int y, int x] { get; set; }
 
-        public T this[int y, int x]
+        public IEnumerable<T> Row(int y)
         {
-            get => Values[IndexOf(y, x)];
-            set => Values[IndexOf(y, x)] = value;
-        }
-
-        private int IndexOf(int y, int x)
-        {
-            if (x < 0 || y < 0 || x >= Width || y >= Width)
+            for (var x = 0; x < Width; x ++)
             {
-                throw new ArgumentException("Invalid coordinate");
+                yield return this[y, x];
             }
-
-            return y * Width + x;
         }
+
+        public IEnumerable<T> Col(int x)
+        {
+            for (var y = 0; y < Height; y ++)
+            {
+                yield return this[y, x];
+            }
+        }
+
+        public IMatrix<T> Clone() => new Matrix<T>(Height, Width, Values.ToList());
+
+        public IMatrix<T> With(int y, int x, T value)
+        {
+            var copy = Clone();
+            copy[y, x] = value;
+            return copy;
+        }
+
+        public IMatrix<T> RotateCw() => new RotatedMatrix<T>(this);
+
+        public IMatrix<T> FlipHorizontal() => new FlippedMatrix<T>(this);
 
         public override string ToString()
         {
@@ -61,21 +94,117 @@ namespace Aoc2020.Lib
             return result.ToString();
         }
 
-        private bool Equals(Matrix<T> other)
+        public bool Equals(IMatrix<T>? other)
         {
-            return Height == other.Height &&
+            return other != null &&
+                   Height == other.Height &&
                    Width == other.Width &&
-                   Values.Zip(other.Values).All(tup => Equals(tup.First, tup.Second));
+                   ValuesEqual(other);
+        }
+
+        private bool ValuesEqual(IMatrix<T> other)
+        {
+            for (var y = 0; y < Height; y ++)
+            {
+                for (var x = 0; x < Width; x ++)
+                {
+                    if (!Equals(this[y, x], other[y, x]))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
 
         public override bool Equals(object obj)
         {
-            return ReferenceEquals(this, obj) || obj is Matrix<T> other && Equals(other);
+            return ReferenceEquals(this, obj) || obj is IMatrix<T> other && Equals(other);
         }
 
         public override int GetHashCode()
         {
             return HashCode.Combine(Height, Width, Values);
+        }
+    }
+
+    public sealed class RotatedMatrix<T> : AbstractMatrix<T> where T : IEquatable<T>
+    {
+        private readonly IMatrix<T> _inner;
+
+        public override int Height => _inner.Width;
+        public override int Width => _inner.Height;
+
+        public RotatedMatrix(IMatrix<T> inner)
+        {
+            _inner = inner;
+        }
+
+        public override T this[int y, int x]
+        {
+            get => _inner[_inner.Height - x - 1, y];
+            set => _inner[_inner.Height - x - 1, y] = value;
+        }
+    }
+
+    public sealed class FlippedMatrix<T> : AbstractMatrix<T> where T : IEquatable<T>
+    {
+        private readonly IMatrix<T> _inner;
+
+        public override int Height => _inner.Height;
+        public override int Width => _inner.Width;
+
+        public FlippedMatrix(IMatrix<T> inner)
+        {
+            _inner = inner;
+        }
+
+        public override T this[int y, int x]
+        {
+            get => _inner[y, _inner.Width - x - 1];
+            set => _inner[y, _inner.Width - x - 1] = value;
+        }
+    }
+
+    public sealed class Matrix<T> : AbstractMatrix<T> where T : IEquatable<T>
+    {
+        private readonly List<T> _values;
+
+        public override int Height { get; }
+        public override int Width { get; }
+        public override IEnumerable<T> Values => _values;
+
+        public Matrix(int height, int width, T defaultValue) :
+            this(height, width, Enumerable.Repeat(defaultValue, height * width))
+        {
+        }
+
+        public Matrix(int height, int width, IEnumerable<T> values)
+        {
+            Height = height;
+            Width = width;
+            _values = values.ToList();
+            if (_values.Count != height * width)
+            {
+                throw new ArgumentException("Invalid number of values");
+            }
+        }
+
+        public override T this[int y, int x]
+        {
+            get => _values[IndexOf(y, x)];
+            set => _values[IndexOf(y, x)] = value;
+        }
+
+        private int IndexOf(int y, int x)
+        {
+            if (x < 0 || y < 0 || x >= Width || y >= Width)
+            {
+                throw new ArgumentException("Invalid coordinate");
+            }
+
+            return y * Width + x;
         }
     }
 }
