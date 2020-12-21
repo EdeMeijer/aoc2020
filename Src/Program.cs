@@ -42,7 +42,8 @@
             // Day19.Part1();
             // Day19.Part2();
             // Day20.Part1();
-            Day20.Part2();
+            // Day20.Part2();
+            Day21.Part1();
         }
     }
 }
