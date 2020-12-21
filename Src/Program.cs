@@ -43,7 +43,7 @@
             // Day19.Part2();
             // Day20.Part1();
             // Day20.Part2();
-            Day21.Part1();
+            Day21.Part1And2();
         }
     }
 }

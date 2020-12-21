@@ -10,7 +10,7 @@ namespace Aoc2020
     {
         private static readonly Regex _inputPattern = new Regex(@"^(?:([a-z]+) )+\(contains (?:([a-z]+)[^a-z]+)+$");
 
-        public static void Part1()
+        public static void Part1And2()
         {
             var input = Input.Lines(21);
 
@@ -100,9 +100,13 @@ namespace Aoc2020
                 ImmutableDictionary<string, string>.Empty
             )!;
 
-            var result = examples.Sum(example => example.Item1.Except(mapping.Values).Count());
+            var part1Solution = examples.Sum(example => example.Item1.Except(mapping.Values).Count());
 
-            Console.WriteLine(result);
+            Console.WriteLine(part1Solution);
+
+            var part2Solution = string.Join(',', mapping.OrderBy(kvp => kvp.Key).Select(kvp => kvp.Value));
+            
+            Console.WriteLine(part2Solution);
         }
     }
 }
