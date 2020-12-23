@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Aoc2020.Lib;
 
 namespace Aoc2020
 {
@@ -10,58 +9,87 @@ namespace Aoc2020
         public static void Part1()
         {
             var input = "135468729";
-
             var cups = input.ToCharArray().Select(c => int.Parse(c.ToString())).ToList();
+            var result = Play(cups, 100, cups.Count - 1);
+            Console.WriteLine(string.Join("", result));
+        }
+
+        public static void Part2()
+        {
+            var input = "135468729";
+            var cups = input.ToCharArray().Select(c => int.Parse(c.ToString())).ToList();
+
+            var maxCup = cups.Max();
+
+            cups.AddRange(Enumerable.Range(maxCup + 1, 1_000_000 - cups.Count));
+
+            var result = Play(cups, 10_000_000, 2);
+            Console.WriteLine((long)result[0] * result[1]);
+        }
+
+        private static List<int> Play(List<int> cups, int moves, int resultSize)
+        {
             var cupMin = cups.Min();
-            var cupMax = cups.Max();
+            // Subtract min cup from all the cups so they are in base 0
+            cups = cups.Select(c => c - cupMin).ToList();
+            // The cup number is the index to an array, the value is the next cup
+
+            var nextCups = new int[cups.Count];
+            for (var i = 0; i < cups.Count; i ++)
+            {
+                var cup = cups[i];
+                var next = cups[(i + 1) % cups.Count];
+                nextCups[cup] = next;
+            }
 
             var current = cups[0];
 
             void Move()
             {
-                var curIdx = cups.Select((c, i) => (c, i)).First(tup => tup.c == current).i;
+                var takeFirst = nextCups[current];
+                var takeSecond = nextCups[takeFirst];
+                var takeLast = nextCups[takeSecond];
+                var takenCups = new [] { takeFirst, takeSecond, takeLast };
 
-                var taken = new List<int>();
-                for (var i = 0; i < 3; i ++)
-                {
-                    taken.Add(cups[(curIdx + 1 + i) % cups.Count]);
-                }
+                // remove by closing the loop
+                nextCups[current] = nextCups[takeLast];
 
-                foreach (var cup in taken)
-                {
-                    cups.Remove(cup);
-                }
-
-                var destination = current - 1;
-                while (!cups.Contains(destination))
+                var destination = current;
+                for (;;)
                 {
                     destination --;
-                    if (destination <= cupMin - 1)
+                    if (destination == -1)
                     {
-                        destination = cupMax;
+                        destination = cups.Count - 1;
+                    }
+
+                    if (!takenCups.Contains(destination))
+                    {
+                        break;
                     }
                 }
-                
-                var destIdx = cups.Select((c, i) => (c, i)).First(tup => tup.c == destination).i;
-                cups.InsertRange(destIdx + 1, taken);
-                
-                curIdx = cups.Select((c, i) => (c, i)).First(tup => tup.c == current).i;
-                current = cups[(curIdx + 1) % cups.Count];
+
+                // insert taken cups
+                nextCups[takeLast] = nextCups[destination];
+                nextCups[destination] = takeFirst;
+
+                current = nextCups[current];
             }
 
-            for (var i = 0; i < 100; i ++)
+            for (var i = 0; i < moves; i ++)
             {
                 Move();
             }
-            
-            var oneIdx = cups.Select((c, i) => (c, i)).First(tup => tup.c == 1).i;
+
             var result = new List<int>();
-            for (var offset = 1; offset < cups.Count; offset ++)
+            var cur = 0;
+            for (var i = 0; i < resultSize; i ++)
             {
-                result.Add(cups[(oneIdx + offset) % cups.Count]);
+                cur = nextCups[cur];
+                result.Add(cur + cupMin);
             }
-            
-            Console.WriteLine(string.Join("", result));
+
+            return result;
         }
     }
 }
