@@ -47,7 +47,8 @@
             // Day22.Part1();
             // Day22.Part2();
             // Day23.Part1();
-            Day23.Part2();
+            // Day23.Part2();
+            Day24.Part1();
         }
     }
 }
