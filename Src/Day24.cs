@@ -10,19 +10,19 @@ namespace Aoc2020
     {
         private static readonly Regex _pattern = new Regex(@"^([sn]?[we])+$");
 
-        public static void Part1()
+        private static readonly Dictionary<string, (int y, int x)> offsets = new Dictionary<string, (int y, int x)>
+        {
+            ["w"] = (-1, 0),
+            ["e"] = (1, 0),
+            ["sw"] = (-1, 1),
+            ["se"] = (0, 1),
+            ["nw"] = (0, -1),
+            ["ne"] = (1, -1)
+        };
+
+        public static void Part1And2()
         {
             var input = Input.Lines(24);
-
-            var offsets = new Dictionary<string, (int y, int x)>
-            {
-                ["w"] = (-1, 0),
-                ["e"] = (1, 0),
-                ["sw"] = (-1, 1),
-                ["se"] = (0, 1),
-                ["nw"] = (0, -1),
-                ["ne"] = (1, -1)
-            };
 
             var blackTiles = input
                 .Select(line => _pattern.Match(line))
@@ -33,7 +33,7 @@ namespace Aoc2020
                 .Select(group => group.Key)
                 .ToHashSet();
 
-            Console.WriteLine(blackTiles.Count);
+            Console.WriteLine($"Part 1: {blackTiles.Count}");
 
             for (var i = 0; i < 100; i ++)
             {
@@ -42,20 +42,16 @@ namespace Aoc2020
                 {
                     for (var x = blackTiles.Min(tile => tile.x) - 1; x <= blackTiles.Max(tile => tile.x) + 1; x ++)
                     {
-                        var adjacent = offsets.Values
-                            .Count(offset => blackTiles.Contains((y + offset.y, x + offset.x)));
-
+                        var adjacent = offsets.Values.Count(o => blackTiles.Contains((y + o.y, x + o.x)));
                         if (adjacent == 2 || blackTiles.Contains((y, x)) && adjacent == 1)
-                        {
                             newBlackTiles.Add((y, x));
-                        }
                     }
                 }
 
                 blackTiles = newBlackTiles;
             }
-            
-            Console.WriteLine(blackTiles.Count);
+
+            Console.WriteLine($"Part 2: {blackTiles.Count}");
         }
     }
 }
