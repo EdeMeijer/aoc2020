@@ -24,26 +24,37 @@ namespace Aoc2020
                 ["ne"] = (1, -1)
             };
 
-            var instructions = input
+            var blackTiles = input
                 .Select(line => _pattern.Match(line))
                 .Select(match => match.Groups[1].Captures.Select(c => offsets[c.Value]))
-                .ToList();
+                .Select(instr => instr.Aggregate((y: 0, x: 0), (cur, step) => (cur.y + step.y, cur.x + step.x)))
+                .GroupBy(tile => tile)
+                .Where(group => group.Count() % 2 == 1)
+                .Select(group => group.Key)
+                .ToHashSet();
 
-            var blackTiles = new HashSet<(int, int)>();
+            Console.WriteLine(blackTiles.Count);
 
-            foreach (var instruction in instructions)
+            for (var i = 0; i < 100; i ++)
             {
-                var tile = instruction.Aggregate((y: 0, x: 0), (cur, step) => (cur.y + step.y, cur.x + step.x));
-                if (blackTiles.Contains(tile))
+                var newBlackTiles = new HashSet<(int y, int x)>();
+                for (var y = blackTiles.Min(tile => tile.y) - 1; y <= blackTiles.Max(tile => tile.y) + 1; y ++)
                 {
-                    blackTiles.Remove(tile);
-                }
-                else
-                {
-                    blackTiles.Add(tile);
-                }
-            }
+                    for (var x = blackTiles.Min(tile => tile.x) - 1; x <= blackTiles.Max(tile => tile.x) + 1; x ++)
+                    {
+                        var adjacent = offsets.Values
+                            .Count(offset => blackTiles.Contains((y + offset.y, x + offset.x)));
 
+                        if (adjacent == 2 || blackTiles.Contains((y, x)) && adjacent == 1)
+                        {
+                            newBlackTiles.Add((y, x));
+                        }
+                    }
+                }
+
+                blackTiles = newBlackTiles;
+            }
+            
             Console.WriteLine(blackTiles.Count);
         }
     }
